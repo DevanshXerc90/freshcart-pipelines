@@ -8,7 +8,19 @@
 
 Repository: https://github.com/DevanshXerc90/freshcart-pipelines
 
-The project contains the required folders, CI workflow, tests, and unchanged reference notebooks. The report's final `git log --oneline` should be refreshed after the remaining implementation commits.
+The project contains the required folders, CI workflow, tests, and unchanged reference notebooks. The following is the local `git log --oneline` before this report's final documentation update:
+
+```text
+047e3d4 Test all Iris accuracy gate depths
+4b66bcc Add evidence-aware assignment report draft
+9b6da22 Add instructor reference notebooks unchanged
+c50567b Implement RabbitMQ topic stream handlers
+8eccbba Implement credential-safe FreshCart ELT flow
+3717bac Implement Mage Iris pipeline blocks
+cd7cc42 Add Part A CI and prepare-data test
+```
+
+These seven commits are local; they have not been pushed to GitHub yet.
 
 ### A2. Git command table
 
