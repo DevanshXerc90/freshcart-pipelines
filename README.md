@@ -16,8 +16,8 @@ This repository contains the starter implementation for the Data Engineering ass
 - `.github/workflows/ci.yml`: Python 3.12 GitHub Actions workflow running pytest on pushes and pull requests.
 - `reports/assignment_report.md`: evidence-aware report with actual local results and remaining service tasks.
 - `reports/build_report.py`: renders the report and screenshot appendix to PDF.
-- `reports/RollNo_Name_Pipelines.pdf`: seven-page report draft; replace the filename placeholders and add remaining service evidence/reflection.
-- `reports/screenshots/`: captured GitHub Actions run 1 (green) and run 2 (intentional red).
+- `reports/RollNo_Name_Pipelines.pdf`: report draft with the CI screenshot appendix; replace the filename placeholders and add remaining service evidence/reflection.
+- `reports/screenshots/`: captured GitHub Actions runs 1 (green), 2 (intentional red), and 3 (corrective green).
 
 ## Local setup
 
@@ -68,6 +68,6 @@ A teammate cannot see a local commit on GitHub until it is pushed, and must have
 
 `python -m pytest -q`: 15 passed. With `test_size=0.3`, the split test failed at 105 training rows; restoring `0.2` passed. Direct local scikit-learn calls measured accuracies 0.633, 0.967, 1.000, 1.000, and 1.000 for depths 1–5, and a depth-3 confusion matrix of 10/9/11 on the diagonal with all four metrics 1.000. These local function results are not Mage CLI executions.
 
-GitHub Actions run 1 passed, run 2 failed on the deliberate `0.3` commit, and run 3 for the corrective `0.2` commit was still running at last check. Screenshots of runs 1 and 2 are saved in `reports/screenshots/` and embedded in the PDF.
+GitHub Actions run 1 passed, run 2 failed on the deliberate `0.3` commit, and run 3 passed after the corrective `0.2` commit. Screenshots of all three runs are saved in `reports/screenshots/` and embedded in the PDF.
 
 Snowflake runs remain pending because no account credentials are configured. Mage CLI/UI runs were not completed locally because the dependency installation was canceled during resolution. Live RabbitMQ delivery remains pending because no broker is configured. The report still requires actual Snowflake/Mage/RabbitMQ evidence, the student's roll number/name, and a personal reflection. The PDF text was supplied in the conversation; its binary `Assignment_DE.pdf` was not present in the workspace.

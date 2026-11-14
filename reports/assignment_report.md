@@ -11,6 +11,7 @@ Repository: https://github.com/DevanshXerc90/freshcart-pipelines
 The project contains the required folders, CI workflow, tests, and unchanged reference notebooks. The following is the local `git log --oneline` before this report's final documentation update:
 
 ```text
+6b38a3e Document actual CI runs and screenshots
 fdabe4c Fix Iris split back to 80/20
 968c310 Demonstrate failing 70/30 split test
 8265c00 Refresh report with final local history
@@ -25,7 +26,7 @@ c50567b Implement RabbitMQ topic stream handlers
 cd7cc42 Add Part A CI and prepare-data test
 ```
 
-These twelve commits are pushed to `main`; the documentation update for this report adds another commit.
+These thirteen commits are pushed to `main`; this evidence update adds another commit.
 
 ### A2. Git command table
 
@@ -42,7 +43,7 @@ A teammate cannot see a local commit on GitHub until it is pushed, and must have
 
 ### A3. CI and split test
 
-`tests/test_prepare_data.py` checks the required 120/30 split. Local evidence: with `test_size=0.3`, the test failed because only 105 rows were labeled train; restoring `0.2` made it pass. The local suite currently passes 15 tests. GitHub Actions run 1 passed on the initial 0.2 commit: [green run](https://github.com/DevanshXerc90/freshcart-pipelines/actions/runs/43636200024). Run 2 failed on the intentional 0.3 commit: [red run](https://github.com/DevanshXerc90/freshcart-pipelines/actions/runs/43636485505). The corrective 0.2 commit triggered run 3: [corrective run](https://github.com/DevanshXerc90/freshcart-pipelines/actions/runs/43636538786), still running at the time of this update. The run 1/2 screenshots are included in the appendix.
+`tests/test_prepare_data.py` checks the required 120/30 split. Local evidence: with `test_size=0.3`, the test failed because only 105 rows were labeled train; restoring `0.2` made it pass. The local suite currently passes 15 tests. GitHub Actions run 1 passed on the initial 0.2 commit: [green run](https://github.com/DevanshXerc90/freshcart-pipelines/actions/runs/43636200024). Run 2 failed on the intentional 0.3 commit: [red run](https://github.com/DevanshXerc90/freshcart-pipelines/actions/runs/43636485505). Run 3 passed after restoring 0.2: [corrective green run](https://github.com/DevanshXerc90/freshcart-pipelines/actions/runs/43636538786). Screenshots of runs 1, 2, and 3 are included in the appendix.
 
 ## Part B: FreshCart ELT
 
@@ -170,10 +171,11 @@ Not implemented. It needs a defined FreshCart message payload, a running RabbitM
 
 ![Failing GitHub Actions run 2](screenshots/ci-red.png)
 
+![Passing corrective GitHub Actions run 3](screenshots/ci-green-fix.png)
+
 ## Evidence still needed
 
 1. Run FreshCart baseline, validation, SCD2, idempotency, and B5 cells in Snowflake; paste actual outputs and screenshots.
 2. Install Mage dependencies in a supported environment (the reference notebook uses Colab), run depths 1–5 with `mage run`, and capture Mage output/UI graph.
 3. Run dispatcher and at least three drivers against RabbitMQ for two minutes; capture matching output and invalid-message handling.
-4. Confirm the corrective GitHub Actions run is green and capture its screenshot if desired; the initial green and intentional red screenshots are included above.
-5. Add your own reflection and replace the report filename placeholder with your roll number and name.
+4. Add your own reflection and replace the report filename placeholder with your roll number and name.
