@@ -11,6 +11,8 @@ Repository: https://github.com/DevanshXerc90/freshcart-pipelines
 The project contains the required folders, CI workflow, tests, and unchanged reference notebooks. The following is the local `git log --oneline` before this report's final documentation update:
 
 ```text
+682ecd6 Add explicit notebook cell language metadata
+e9bc756 Record milestone history in assignment report
 047e3d4 Test all Iris accuracy gate depths
 4b66bcc Add evidence-aware assignment report draft
 9b6da22 Add instructor reference notebooks unchanged
@@ -20,7 +22,7 @@ c50567b Implement RabbitMQ topic stream handlers
 cd7cc42 Add Part A CI and prepare-data test
 ```
 
-These seven commits are local; they have not been pushed to GitHub yet.
+These nine commits are local; they have not been pushed to GitHub yet.
 
 ### A2. Git command table
 
