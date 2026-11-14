@@ -23,7 +23,7 @@ except ModuleNotFoundError as error:
 @transformer
 def transform(df: pd.DataFrame, *args: Any, **kwargs: Any) -> pd.DataFrame:
     """Return the input rows with an 80/20 train/test label."""
-    train_df, test_df = train_test_split(df, test_size=0.3, random_state=42)
+    train_df, test_df = train_test_split(df, test_size=0.2, random_state=42)
     train_df = train_df.copy()
     test_df = test_df.copy()
     train_df["split"] = "train"
