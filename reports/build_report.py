@@ -13,6 +13,7 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import (
     Flowable,
+    Image,
     PageBreak,
     Paragraph,
     Preformatted,
@@ -134,6 +135,15 @@ def build_pdf() -> Path:
             continue
         if in_code:
             code_lines.append(line)
+            index += 1
+            continue
+        image_match = re.fullmatch(r"!\[(.*?)\]\((.*?)\)", line)
+        if image_match:
+            image_path = (REPORT_PATH.parent / image_match.group(2)).resolve()
+            if image_path.is_file():
+                story.append(PageBreak())
+                story.append(Paragraph(_inline(image_match.group(1)), styles["SubHeading"]))
+                story.append(Image(str(image_path), width=document.width, height=235 * mm, kind="bound"))
             index += 1
             continue
         if line.startswith("|"):
