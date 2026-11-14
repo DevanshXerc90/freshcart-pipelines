@@ -49,12 +49,23 @@ def test_iris_pipeline_blocks(tmp_path, monkeypatch):
     assert (tmp_path / "iris_predictions.csv").is_file()
 
 
-def test_depth_one_fails_the_accuracy_gate(tmp_path, monkeypatch):
+@pytest.mark.parametrize(
+    ("max_depth", "should_pass"),
+    [(1, False), (2, True), (3, True), (4, True), (5, True)],
+)
+def test_depth_accuracy_gate_controls_export(tmp_path, monkeypatch, max_depth, should_pass):
     monkeypatch.chdir(tmp_path)
     split_data = transform(load_iris(as_frame=True).frame)
-    predictions = train(split_data, max_depth=1)
+    predictions = train(split_data, max_depth=max_depth)
+    accuracy = (predictions["predicted"] == predictions["target"]).mean()
 
-    with pytest.raises(AssertionError, match="below 0.8"):
+    if should_pass:
+        assert accuracy >= 0.8
         assert_accuracy(predictions)
-
-    assert not (tmp_path / "iris_predictions.csv").exists()
+        export_data(predictions)
+        assert (tmp_path / "iris_predictions.csv").exists()
+    else:
+        assert accuracy < 0.8
+        with pytest.raises(AssertionError, match="below 0.8"):
+            assert_accuracy(predictions)
+        assert not (tmp_path / "iris_predictions.csv").exists()
