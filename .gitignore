@@ -6,6 +6,7 @@ __pycache__/
 *.py[cod]
 *.pkl
 *.csv
+!reports/c3_confusion_matrix.csv
 mage.log
 .venv/
 data/freshcart_landing/
