@@ -26,13 +26,21 @@ def handle_delivery(channel, delivery_tag: int, routing_key: str, body: bytes, n
     except (json.JSONDecodeError, UnicodeDecodeError):
         message = None
 
+    message_id = message.get("id", "<missing>") if isinstance(message, dict) else "<unknown>"
     if not has_zone(message):
-        print(f"[{name}] rejected message: missing or invalid zone", flush=True)
         channel.basic_nack(delivery_tag=delivery_tag, requeue=False)
+        print(
+            f"[{name}] REJECTED routing_key={routing_key} message_id={message_id} "
+            "nack_status=nacked requeue=False reason=missing_or_invalid_zone",
+            flush=True,
+        )
         return
 
-    print(f"[{name}] received {routing_key}: {message}", flush=True)
     channel.basic_ack(delivery_tag=delivery_tag)
+    print(
+        f"[{name}] RECEIVED routing_key={routing_key} message_id={message_id} ack_status=acked",
+        flush=True,
+    )
 
 
 def run_driver(name: str, binding_pattern: str) -> None:

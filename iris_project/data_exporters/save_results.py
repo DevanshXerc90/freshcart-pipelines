@@ -2,17 +2,25 @@
 
 import pandas as pd
 
-try:
-    from mage_ai.data_preparation.decorators import data_exporter, test
-except ModuleNotFoundError as error:
-    if error.name != "mage_ai":
-        raise
+if 'data_exporter' not in globals():
+    try:
+        from mage_ai.data_preparation.decorators import data_exporter
+    except ModuleNotFoundError as error:
+        if error.name != 'mage_ai':
+            raise
 
-    def data_exporter(function):
-        return function
+        def data_exporter(function):
+            return function
 
-    def test(function):
-        return function
+if 'test' not in globals():
+    try:
+        from mage_ai.data_preparation.decorators import test
+    except ModuleNotFoundError as error:
+        if error.name != 'mage_ai':
+            raise
+
+        def test(function):
+            return function
 
 
 @data_exporter

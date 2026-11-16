@@ -2,17 +2,25 @@
 
 import pandas as pd
 
-try:
-    from mage_ai.data_preparation.decorators import test, transformer
-except ModuleNotFoundError as error:
-    if error.name != "mage_ai":
-        raise
+if 'transformer' not in globals():
+    try:
+        from mage_ai.data_preparation.decorators import transformer
+    except ModuleNotFoundError as error:
+        if error.name != 'mage_ai':
+            raise
 
-    def transformer(function):
-        return function
+        def transformer(function):
+            return function
 
-    def test(function):
-        return function
+if 'test' not in globals():
+    try:
+        from mage_ai.data_preparation.decorators import test
+    except ModuleNotFoundError as error:
+        if error.name != 'mage_ai':
+            raise
+
+        def test(function):
+            return function
 
 
 @transformer

@@ -48,7 +48,7 @@ def test_valid_dispatcher_message_has_zone():
     assert has_zone(message)
 
 
-def test_driver_nacks_missing_zone_and_acks_valid_message():
+def test_driver_nacks_missing_zone_and_acks_valid_message(capsys):
     class RecordingChannel:
         def __init__(self):
             self.actions = []
@@ -60,10 +60,25 @@ def test_driver_nacks_missing_zone_and_acks_valid_message():
             self.actions.append(("ack", kwargs))
 
     channel = RecordingChannel()
-    handle_delivery(channel, 1, "bangalore.koramangala.ride", b'{"city":"bangalore"}', "Ravi")
-    handle_delivery(channel, 2, "bangalore.koramangala.ride", b'{"zone":"koramangala"}', "Ravi")
+    handle_delivery(
+        channel,
+        1,
+        "bangalore.koramangala.ride",
+        b'{"id":"invalid-1","city":"bangalore"}',
+        "Ravi",
+    )
+    handle_delivery(
+        channel,
+        2,
+        "bangalore.koramangala.ride",
+        b'{"id":"valid-2","zone":"koramangala"}',
+        "Ravi",
+    )
 
     assert channel.actions == [
         ("nack", {"delivery_tag": 1, "requeue": False}),
         ("ack", {"delivery_tag": 2}),
     ]
+    output = capsys.readouterr().out
+    assert "[Ravi] REJECTED routing_key=bangalore.koramangala.ride message_id=invalid-1 nack_status=nacked requeue=False" in output
+    assert "[Ravi] RECEIVED routing_key=bangalore.koramangala.ride message_id=valid-2 ack_status=acked" in output

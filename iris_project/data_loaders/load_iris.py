@@ -3,17 +3,25 @@
 import pandas as pd
 from sklearn.datasets import load_iris
 
-try:
-    from mage_ai.data_preparation.decorators import data_loader, test
-except ModuleNotFoundError as error:
-    if error.name != "mage_ai":
-        raise
+if 'data_loader' not in globals():
+    try:
+        from mage_ai.data_preparation.decorators import data_loader
+    except ModuleNotFoundError as error:
+        if error.name != 'mage_ai':
+            raise
 
-    def data_loader(function):
-        return function
+        def data_loader(function):
+            return function
 
-    def test(function):
-        return function
+if 'test' not in globals():
+    try:
+        from mage_ai.data_preparation.decorators import test
+    except ModuleNotFoundError as error:
+        if error.name != 'mage_ai':
+            raise
+
+        def test(function):
+            return function
 
 
 @data_loader

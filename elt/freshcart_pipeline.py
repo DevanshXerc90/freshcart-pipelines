@@ -154,13 +154,16 @@ def load_file(connection, local_path: Path, table: str, stage_dir: str) -> None:
 
 
 def setup_sql(database: str) -> str:
-    """Build setup SQL after validating the environment-provided database identifier."""
+    """Build setup SQL for the configured warehouse and target database."""
     if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_$]*", database):
         raise ValueError("SNOWFLAKE_DATABASE must be a simple Snowflake identifier")
+    warehouse = os.getenv("SNOWFLAKE_WAREHOUSE")
+    if not warehouse:
+        raise RuntimeError("Set SNOWFLAKE_WAREHOUSE before preparing the Snowflake setup SQL")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_$]*", warehouse):
+        raise ValueError("SNOWFLAKE_WAREHOUSE must be a simple Snowflake identifier")
     return f"""
-    CREATE WAREHOUSE IF NOT EXISTS FRESHCART_WH
-      WAREHOUSE_SIZE = 'XSMALL' AUTO_SUSPEND = 60 AUTO_RESUME = TRUE INITIALLY_SUSPENDED = TRUE;
-    USE WAREHOUSE FRESHCART_WH;
+    USE WAREHOUSE {warehouse};
     CREATE DATABASE IF NOT EXISTS {database};
     USE DATABASE {database};
     CREATE SCHEMA IF NOT EXISTS bronze;
@@ -191,17 +194,31 @@ def setup_sql(database: str) -> str:
       run_id STRING, extracted_at TIMESTAMP_TZ, src_file STRING, src_row NUMBER,
       loaded_at TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
     );
-    CREATE OR REPLACE TABLE ref.tier_multiplier AS
-      SELECT * FROM VALUES ('Silver', 1), ('Gold', 2), ('Platinum', 3) AS v(tier, multiplier);
-    CREATE OR REPLACE TABLE ref.state_region AS
-      SELECT * FROM VALUES
+    CREATE TABLE IF NOT EXISTS ref.tier_multiplier (tier STRING, multiplier NUMBER);
+    MERGE INTO ref.tier_multiplier AS target
+    USING (
+      SELECT column1::STRING AS tier, column2::NUMBER AS multiplier
+      FROM VALUES ('Silver', 1), ('Gold', 2), ('Platinum', 3)
+    ) AS source ON target.tier = source.tier
+    WHEN MATCHED AND NOT EQUAL_NULL(target.multiplier, source.multiplier)
+      THEN UPDATE SET multiplier = source.multiplier
+    WHEN NOT MATCHED THEN INSERT (tier, multiplier) VALUES (source.tier, source.multiplier);
+
+    CREATE TABLE IF NOT EXISTS ref.state_region (state STRING, region STRING);
+    MERGE INTO ref.state_region AS target
+    USING (
+      SELECT column1::STRING AS state, column2::STRING AS region
+      FROM VALUES
         ('Tamil Nadu','South'), ('Karnataka','South'), ('Kerala','South'), ('Andhra Pradesh','South'),
         ('Telangana','South'), ('Puducherry','South'), ('Maharashtra','West'), ('Gujarat','West'),
         ('Goa','West'), ('Rajasthan','West'), ('Delhi','North'), ('Haryana','North'), ('Punjab','North'),
         ('Uttar Pradesh','North'), ('Himachal Pradesh','North'), ('Jammu and Kashmir','North'),
         ('Uttarakhand','North'), ('West Bengal','East'), ('Odisha','East'), ('Bihar','East'),
         ('Jharkhand','East'), ('Assam','East'), ('Madhya Pradesh','Central'), ('Chhattisgarh','Central')
-      AS v(state, region);
+    ) AS source ON target.state = source.state
+    WHEN MATCHED AND NOT EQUAL_NULL(target.region, source.region)
+      THEN UPDATE SET region = source.region
+    WHEN NOT MATCHED THEN INSERT (state, region) VALUES (source.state, source.region);
     CREATE TABLE IF NOT EXISTS ref.pincode_geo (
       pincode STRING PRIMARY KEY, city STRING, state STRING, region STRING, updated_at TIMESTAMP_LTZ
     );
